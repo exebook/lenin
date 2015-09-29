@@ -6,11 +6,10 @@ This is a practical attempt to create a semantic oriented programming language.
 
 Currently this repo is "pseudo private", in other words not intendent for public. Later I will write something more meaningful about it. But if you are interested you are welcome to review my work.
 
-Of course, it is written in [elfu][1]
+Of course, it is written in [elfu][1].
 [1]: https://github.com/exebook/elfu
 ---
-
-an attempt to create a language (at least define example syntax)
+An attempt to create a language (at least define example syntax)
 that has no parameter passing but instead is fully "context-bound"
 
 - idea is to have more fixed lexems in the programming languages, i.e. thousands
@@ -19,21 +18,25 @@ that has no parameter passing but instead is fully "context-bound"
 	but all current programming languages in fact do not allow reading
 	defined like this.
 	
-	so idea is to emulate how we read and let the computer read the same way
+-	so idea is to emulate how we read and let the computer read the same way
 	lexems defined for the project are not lexems but a variables
 	variables are evil, lexems are good
 	
-	lexem is learned once and forever, unlike "function names" that are project related or even file-related.
+-	lexem is learned once and forever, unlike "function names" that are project related or even file-related.
 	
-	we should have a huge number of commonly recognized lexems
+-	we should have a huge number of commonly recognized lexems
 	this will allow better understanding of each other's code
 	and allow code to be read fast and natural
 	thus "lexically enriched" and "naturally interpreting"
 	
 - idea is to have at least three context levels
+
 1) word by word context, like left word, right word
+
 2) sentence level, like subject/predicate or simple names inside the sentence.
+
 3) Paragraph context.
+
 4) Page context.
 
 Smaller context cannot update larger context more than one step above.
@@ -112,4 +115,4 @@ def list
 
 list 5 50 and 500 add print.
 ----------------
-
+```
