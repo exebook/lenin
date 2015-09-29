@@ -68,9 +68,6 @@ X = {
 	b: { value:2, links:[a_b] },
 	a_b: { value:print }
 }
-
-
-
 -----------------------------------------
 
 def plus
@@ -82,7 +79,6 @@ def plus
 usage:
 
 A plus b. // sentence is always capitalized and ends with dot.
-
 -----------------------------------------
 
 def add
