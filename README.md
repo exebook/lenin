@@ -30,11 +30,10 @@ that has no parameter passing but instead is fully "context-bound"
 	thus "lexically enriched" and "naturally interpreting"
 	
 - idea is to have at least three context levels
-
-- 1) word by word context, like left word, right word
-- 2) sentence level, like subject/predicate or simple names inside the sentence.
-- 3) Paragraph context.
-- 4) Page context.
+ - 1) word by word context, like left word, right word
+ - 2) sentence level, like subject/predicate or simple names inside the sentence.
+ - 3) Paragraph context.
+ - 4) Page context.
 
 Smaller context cannot update larger context more than one step above.
 For example, a word cannot update paragraph context, only a sentence context.
