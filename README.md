@@ -6,6 +6,8 @@ This is a practical attempt to create a semantic oriented programming language.
 
 Currently this repo is "pseudo private", in other words not intendent for public. Later I will write something more meaningful about it. But if you are interested you are welcome to review my work.
 
+Of course, it is written in [elfu][1]
+[1]: https://github.com/exebook/elfu
 ---
 
 an attempt to create a language (at least define example syntax)
