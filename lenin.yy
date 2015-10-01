@@ -3,86 +3,76 @@
 main ∆ {}
 
 // SENTENCE
-name ∆ []  what ∆ []  when ∆ []  wait ∆ []  event ∆ []  exe ∆ []
+node ∆∅  name ∆[]  code ∆[]  when ∆[]  wait ∆[]  event ∆[]  exe ∆[]
 
 // PARA
 
 // PAGE
 //============================================================//
 
-➮ plus_op {
-	$ ⚫a + ⚫b
-}
+➮ plus_op { $ ⚫a + ⚫b }
+➮ literal_op { $ ⚫a }
+➮ if_op { ⌥ ⚫a() { ⚫b() } }
+➮ print_op { ロ ⚫a() ⦙ }
+➮ greater_op { $ ⚫a > ⚫b }
 
-➮ literal_op {
-	$ ⚫a
-}
-
-➮ if_op {
-	⌥ ⚫a() { ⚫b() }
-}
-
-➮ print_op {
-	ロ ⚫a()
-}
-
-➮ greater_op {
-	$ ⚫a > ⚫b
-}
-
-➮ ret {
-	❶ __argarr  ❷ ∅
-	⌥ ⬤(①⁰) ≠ 'string' { ② = ① ⬉ }
-	$ { f: main[① ⬉], args: ①, next: ② }
+wait1 ∆ []
+➮ waitFor w {
+	o ∆ { func: arguments.callee.caller, wait: w }
+	wait1 ⬊ o
 }
 
 main.plus = ➮ {
 	❶ a.prev.s  ❷ a.next.s
-	$ ret(a.next.next, 'means', plus_op ꘉ {a:★①, b:★②})
+	node = a.next.next
+	means(plus_op ꘉ {a:★①, b:★②})
 }
 
 main.symbol = ➮ {
-	$ { means: literal_op ꘉ {a:'"'+ a.next.s +'"'}, next: a.next }
+	node = a.next.next
+	means(literal_op ꘉ {a:'"'+ a.next.s +'"'})
 } 
 
 main.print = ➮print {
-	⌥ whatꕉ {
-		$ ret('it_is', print_op ꘉ { a: whatꕉ })
+	⌥ codeꕉ {
+		it_is(print_op ꘉ { a: codeꕉ })
 	} ⎇ {
-		$ { wait: 'what' }
+		waitFor('code')
 	}
 }
 
+➮ then { codeꕉ = a ⦙ when ⬉ }
+➮ it_is { codeꕉ = a }
+➮ means { code ⬊ a }
+➮ retwhen { when ⬊ a }
+
 main.when = ➮ {
-	⌥ whenꕉ && whatꕉ {
-		$ ret('then', if_op ꘉ { a:whenꕉ, b:whatꕉ } )
+	⌥ whenꕉ && codeꕉ {
+		then (if_op ꘉ { a:whenꕉ, b:codeꕉ })
+		${}
 	} ⎇ {
-		$ { wait: 'when what' }
+		$ { wait: 'when code' }
 	}
 }
 
 main.greater = ➮ {
 	x ∆ a.prev.s  y ∆ a.next.s
-	$ ret(a.next.next, 'retwhen', greater_op ꘉ {a:x, b:y})
+	cursor = a.next.next
+	retwhen(greater_op ꘉ {a:x, b:y})
 }
 
-main.exit = ➮ {
-	⚑
-}
-
-main.it = ➮ it {
-	
-}
+main.exit = ➮ { ⚑ }
+main.it = ➮ it { }
 
 main.dbg = ➮ dbg {
-	ロ 'Debug what:', what
+	ロ 'Debug code:', code
 	ロ '         when:', when
 	$ {}
 }
 
 main._sentence = ➮ _sentence {
-	exe = exe ꗚ what
-	what = []
+	exe = exe ꗚ code
+	code = []
 	wait = []
 	${ }
 }
@@ -100,7 +90,7 @@ main._page = ➮ _page {
 
 ➮ checkWait rec {
 	i ► rec.wait ⌶ ' '
-		⌥ i ≟ 'what' && what↥ > 0
+		⌥ i ≟ 'code' && code↥ > 0
 			{ $⦿ }
 }
 
@@ -113,54 +103,33 @@ main._page = ➮ _page {
 	})
 }
 
-➮ recordWaits f w args {
-	⌥ w {
-		o ∆ { func: f, wait: w, args: args }
-		wait ⬊ o
-	}
-}
-
-main.it_is = ➮ it_is {
-	whatꕉ = a
-}
-
-main.then = ➮ then {
-	whatꕉ = a
-	when ⬉
-}
-
-main.means = ➮ means {
-	what ⬊ a
-}
-
-main.retwhen = ➮ {
-	when ⬊ a
-}
-
 ➮ runFunction f node {
 	r ∆ f(node)
-	⌥ r.f { r.f.apply(r, r.args) }
 	checkActiveWaits()
-	recordWaits(f, r.wait, r.args)
-	$ r.next
+	wait = wait ꗚ wait1 ⦙ wait1 = []
 }
 
-➮ mainLoop {
+main._undefined = ➮ {
+	name ⬊ a.s
+	${}
+}
+
+➮ mainLoop node {
 	⧖ node {
 		f ∆ main[node.s]
-		⌥ f ≠ ∅ {
-			n ∆ runFunction(f, node)
-			⌥ n { node = n }
-			⎇ node = node.next
-		} ⎇ {
-			name ⬊ node.s
+		⌥ f ≟ ∅ { f = main._undefined}
+			runFunction(f, node)
 			node = node.next
-		}
 		⧖ event↥ > 0 {
 			runFunction(event ⬉)
 		}
 	}
 }
+
+mainLoop(leninTokenize('''
+	5 plus 7 print when 3 greater 2 dbg print when 5 plus 5 5 greater 2.
+	print symbol hello.
+'''))
 
 /*
 	10 plus 1 print.
@@ -171,12 +140,6 @@ main.retwhen = ➮ {
 	symbol hello print.
 */
 	
-node ∆ leninTokenize('''
-	5 plus 7 print when 3 greater 2 dbg print when 5 plus 5 5 greater 2.
-''')
-
-mainLoop()
-
 /*
 	unknown words:
 	sentence level: val
