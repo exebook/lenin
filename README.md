@@ -114,5 +114,9 @@ list 5 50 and 500 add print.
 
 Theory of readable context. Readable concept is a theory that states that it is very simple to create a line of text that is supposed to create a mind state almost or completely impossible for a real human to maintain. The mind picture starts to build with a signle word and then is extended in the readers mind with every new added word. This should be a process of a simple extension, as opposed to complex modification of picture or context. Consider programming language Forth sentence "1 2 3 over + swap over *", after the execution of this code the stack will be "10,5,1". The final contents of the stack represents data, but also the line of characters: "10,5,1" also represents the same data. The code above with "over" and "swap" can be considered one text representation and "10,5,1" is another representation of the same state. Which one is easier to read? Obviously "10,5,1" is easier to read because the state it represents and the text that we read is almost the same. The difference is only that internal data is bits and the text is characters.
 
+The rule is simple: once the context-state have been created from source code text, it could be converted back to the same or very similar text. The simpler such backward conversion is and closer the output is to the original code, the more "Readable context" is. Maybe this concept could be also called "reversibility of context representation".If code converts to a semtex that cannot be easily converted back to the same or very similar representation it will probably be really hard for a programmer to read as well.
+
+
+
 
 

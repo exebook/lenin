@@ -44,8 +44,9 @@ context ∆ (➮ {
 	f.dbg = name
 	$ f
 }
+➮ result_op { $⚪ }
 ➮ plus_op { $ ⚫a + ⚫b }
-➮ literal_op { $ ⚫a }
+➮ symbol_op { $ ⚫a }
 ➮ if_op {
 	⌥ ⚫a() { ⚫b() }
 }
@@ -57,6 +58,7 @@ context ∆ (➮ {
 }
 
 waitForQueue ∆ []
+
 ➮ waitFor w {
 	o ∆ { func: arguments.callee.caller, wait: w }
 	waitForQueue ⬊ o
@@ -70,7 +72,7 @@ main.plus = ➮ {
 
 main.symbol = ➮ {
 	node = node.next
-	push('code', oper('literal_op', literal_op, {a:'"'+ a.next.s +'"'}))
+	push('code', oper('symbol_op', symbol_op, {a:'"'+ a.next.s +'"'}))
 } 
 
 main.print = ➮print {
@@ -95,6 +97,38 @@ main.greater = ➮ {
 	cursor = a.next.next
 	push('when', oper('greater_op', greater_op, {a:x, b:y}) )
 }
+
+main.sum = ➮ {
+	⌥ !empty('all') {
+		push('code', oper('sum_op', sum_op, { }) )
+	} ⎇ {
+		waitFor('all')
+	}
+	//
+	➮ sum_op {
+		n ∆ ∅
+		i ► context.all ⌥ n ≟ ∅ {
+			n = i()
+		} ⎇ {
+			n += i()
+		}
+		$ n
+		push('code', oper('result', result_op, n))
+	}
+}
+
+main.and = ➮ and {
+	⌥ !empty('code') {
+		⌥ empty('all') { waitFor('code') }
+		push('all', pop('code'))
+		clear('code')
+	} ⎇ {
+		ロ 'and: empty code'
+		⚑
+	}
+}
+
+//num 5 and num 7
 
 main.load = ➮ {
 	⛁ last('path')
@@ -122,7 +156,9 @@ main._para = ➮ _para {
 
 main._page = ➮ _page {
 	ロロ color(3)
-	e ► context.exe { e() }
+	e ► context.exe {
+		e()
+	}
 	ロ color(7)
 }
 
@@ -141,8 +177,20 @@ main._page = ➮ _page {
 	})
 }
 
+➮ stepDebug {
+	⌥ context.code ↥ > 0 {
+		i ► context.code
+		ロロ'  '+i_+' '+color(6) +i.dbg+color(7)
+	}
+	⌥ context.when ↥ > 0 {
+		ロロ '@'+color(2)+context.whenꕉ.dbg+color(7)
+	}
+}
+
 ➮ runFunction f node {
+	⌥ node { ロロ '\n'+color(5)+ node.s +color(7) + ' '⦙ }
 	f(node)
+	stepDebug()
 	checkActiveWaits()
 	context.wait = context.wait ꗚ waitForQueue ⦙ waitForQueue = []
 }
@@ -154,34 +202,44 @@ main._undefined = ➮ {
 ➮ mainLoop {
 	node = a
 	⧖ node {
-		⌥ node { ロ '\n@'+ node.s ⦙ }
 		f ∆ main[node.s]
 		⌥ f ≟ ∅ { f = main._undefined}
-			runFunction(f, node)
-			node = node.next
+		runFunction(f, node)
+		node = node.next
 		⧖ event↥ > 0 {
 			runFunction(event ⬉)
 		}
-		⌥ context.code ↥ > 0 {
-			ロ 'code*'+context.code⁰.dbg
-		}
-		⌥ context.when ↥ > 0 {
-			ロ 'when*'+context.when⁰.dbg
-		}
 	}
+	ロ context.code
 }
 
+//	symbol abc and symbol qwe sum print.
 mainLoop(leninTokenize('''
-	5 plus 7 print when 3 greater 2.
+	str 'abc' length print.
+	num 555 
 '''))
 
 /*
 
+idea about *verbs and #nouns!
+
+*concat #str #other-str | #str
+*split str other-str | arr
+
+Q: how to use same *length on str and arr?
+*length str | num
+*length arr | num
+A: generalize via "type"
+#list - can refer to str or arr or something else
+*str 'abc' | #str='abc' #list='str' #item='str'
+*num X | #num=X #item='num'
 
 unknown words:
 	word level: token
 	sentence level: val
 	para level: var
 	page level: concept
-	
+	vlc dev 2349/774/27792
 */
+
+
