@@ -118,5 +118,7 @@ The rule is simple: once the context-state have been created from source code te
 
 
 
-
+---------------
+rename lenin to leenin
+low level leenin could be marx, no GC, simple dict, no or simple arrays, etc.
 
