@@ -1,3 +1,7 @@
+/*
+	DEAR ME, ENABLE TDD PLEASE!! THANK YOU V.M.
+*/
+
 ≣ 'tokenize'
 
 main ∆ {}
@@ -16,22 +20,43 @@ context ∆ (➮ {
 // PAGE
 //============================================================//
 
-➮ setNum {
-	context.num = a
-	context.item = 'num'
+➮ crash {
+	ロ color(9) + 'Error: ' + __argarr ⫴ ' ' + color(7)
+	⚑
 }
 
-➮ setStr {
-	context.str = a
-	context.item = 'str'
-	context.list = 'str'
+➮ itemclear field other {
+	flip ∆ ⦾
+	⌥ field ≟ ∅ { field = context.item }
+	⌥ context.other { flip = ⦿, context.other = ⦾ }
+	⌥ other { flip = !flip }
+	f ∆ field
+	⌥ flip { f += '2' }
+	contextᶠ = ∅
 }
 
-➮ getItem {
-	$ context[context.item]
+➮ itemset field value other {
+	flip ∆ ⦾
+	⌥ field ≟ ∅ { field = context.item }
+	⌥ context.other { flip = ⦿, context.other = ⦾ }
+	⌥ other { flip = !flip }
+	f ∆ field
+	⌥ flip { f += '2' }
+	⌥ contextᶠ ≠ ∅ { crash('Redefining of ', field, 'is not allowed') }
+	contextᶠ = value
 }
 
-main.num = ➮ {
+➮ itemget field other {
+	flip ∆ ⦾
+	⌥ field ≟ ∅ { field = context.item }
+	⌥ context.reverse { flip = !flip }
+	⌥ other { flip = !flip }
+	f ∆ field
+	⌥ flip { f += '2' }
+	$ contextᶠ
+}
+
+main['num'] = ➮ {
 	node = node.next
 	⌥ context.other {
 		context.othernum = ★(node.s)
@@ -40,22 +65,24 @@ main.num = ➮ {
 	⎇ {
 		setNum(★(node.s))
 	}
-} 
+}
 
 main.str = ➮ {
 	node = node.next
-	⌥ context.other {
-		context.otherstr = node.s
-		context.other = ⦾
-	}
-	⎇ {
-		setStr(node.s)
-	}
+	itemset('str', node.s)
+	context.item = 'str'
 } 
 
 main.other = ➮ {
 	context.other = ⦿
 }
+
+/*
+
+эх, во-первых реверс и озер это одно и тоже вышло.
+во-вторых, допцстимо ли использовать itemget потом реверс а потом снова итемгет?
+ведь это не декомпозится. то есть из конечного контекста предложения не удастся всё предложение восстановить. 
+*/
 
 main.each = ➮ {
 	context.each = ⦿
@@ -71,18 +98,18 @@ main.print = ➮print {
 		}
 	}
 	⎇ {
-		item ∆ context[context.item]
+		item ∆ itemget()
 		ロ item
 	}
 }
 
 main.push = ➮ {
-	⌥ context.list ≟ 'str' { context.str += getItem() }
-	⌥ context.list ≟ 'arr' { context.arr ⬊ getItem() }
+	⌥ context.list ≟ 'str' { context.str += itemGet() }
+	⌥ context.list ≟ 'arr' { context.arr ⬊ itemGet() }
 }
 
 main.split = ➮ {
-	context.arr = context.str ⌶ context.otherstr
+	context.arr = getItem('str') ⌶ getItem2('str')
 	context.list = 'arr'
 }
 
@@ -91,7 +118,9 @@ main.length = ➮ {
 }
 
 main.concat = ➮ {
-	setStr(context.str + context.otherstr)
+	tmp ∆ itemget('str') + itemget('str', ⦿)
+	itemclear()
+	itemset('str', tmp)
 }
 
 main.plus = ➮ {
@@ -103,10 +132,41 @@ main.item = ➮ {
 	context.item = node.s
 }
 
+main.list = ➮ {
+	node = node.next
+	context.list = node.s
+}
+
+main.pop = ➮ {
+	node = node.next
+//	⌥ context.list ≟ 'str' { ⌶⬈⫴ }
+	⌥ context.list ≟ 'arr' {
+		n ∆ context.arr ⬈
+		⌥ ⬤n ≟ 'string' {
+			context.item = 'str'
+			context.str = n
+		}
+		⥹ ⬤n ≟ 'number' {
+			context.item = 'num'
+			context.num = n
+		}
+		context.arr ⬊ itemGet()
+	}
+
+	context.list = node.s
+}
+
 main._sentence = ➮ _sentence {
+	context.other = ⦾
+	context.each = ⦾
+	context.list = ∅
 }
 
 main._para = ➮ _para {
+	context.item = ∅
+	context.num = ∅
+	context.str = ∅
+	context.arr = ∅
 }
 
 main._page = ➮ _page {
@@ -127,16 +187,19 @@ main._undefined = ➮ {
 }
 
 mainLoop(leninTokenize('''
-	str abc-def length print.
-	num 555 print.
-	str 111 other str 222 concat print.
-	num 700 other num 77 plus print.
-	item str print.
-	item num print.
-	str 1,2,3,4,5 other str , split each print.
+	str a other str b concat print.
 '''))
 
+//	load from 'abc' then split by '\n'.
 /*
+
+override itemGet
+	⌥ reverse otherGet
+	  parent itemGet
+
+override otherGet
+	⌥ reverse itemGet
+	  parent otherGet
 
 -- *verbs, #nouns --
 
@@ -153,12 +216,20 @@ mainLoop(leninTokenize('''
 *each | #each = ⦿
 *print | prn[#item], ⌥ #each { n ► arr ロ n }, #each = ⦾
 
+*#other *concat *split *length *#list *#str *#num *push *#each *print *#item
+
 unknown words:
 	word level: token
 	sentence level: val
 	para level: var
 	page level: concept
-	vlc dev 2349/774/27792
+	
+строка 111 а строка 222 склеить вывод. число 700 и число 77 плюс вывод. это строка вывод. это число вывод. строка 1-2-3-4-5 и строка - разбить это число .вложить все вывод.
+
+это мега идея: каждый узел в семантическом контексте, может иметь имя или быть безымяным, однако, как только узел получает много связей, компилятор может начать выдавать варнинги: у вас сложная структура (узел) однако без имени, это плохо! при большой сложности узла может быть даже фатал-еррор.
+
+Крутой пример лексообразования в фильме про тюрьму со шварцем и сталоне, где сталоне показывает шварцу повадки охранников, а шварц каждому из них даёт кличку на ходу.
+
 */
 
 

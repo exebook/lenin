@@ -117,8 +117,11 @@ Theory of readable context. Readable concept is a theory that states that it is 
 The rule is simple: once the context-state have been created from source code text, it could be converted back to the same or very similar text. The simpler such backward conversion is and closer the output is to the original code, the more "Readable context" is. Maybe this concept could be also called "reversibility of context representation".If code converts to a semtex that cannot be easily converted back to the same or very similar representation it will probably be really hard for a programmer to read as well.
 
 
+Мега гипотеза, что если сделать контекст по принципу "только добавлять, ничего не изменять". То есть если поле ≟ ∅ то можно установить значение, иначе - ошибка. Тогда надо много всяких проверок. Например слово 'reverse' или 'обмен', меняет num и other-num, но поскольку менять значение обоих полей нельзя, то устанавливается context.reverse=⦿ и во всех функциях использующих item надо проверять на reverse. То есть работать исключительно через itemGet(). Но как дать пользователю добавлять свои понятия вроде "обмен"? Значит, пользователь должен иметь возможность перекрывать, существующие слова и вызывыть их по цепочке наследования.
+
+Вопрос такой: стоит ли сейчас определять новые слова на подлежащем языке (JavaScript) или на самом ленине при каждом удобном случае? Думаю пока стоит придерживаться такого подхода чтобы использовать подлежащий язык всюду. Как бы ни был соблазн использовать надлежащий. Так будет явно проще работать.
 
 ---------------
-rename lenin to leenin
+rename lenin to leenin to clarify the acronym
 low level leenin could be marx, no GC, simple dict, no or simple arrays, etc.
 
